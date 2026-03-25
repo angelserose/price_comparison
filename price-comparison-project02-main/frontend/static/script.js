@@ -38,6 +38,24 @@ function displayProducts(data) {
             img.className = "product-img";
             card.appendChild(img);
 
+            // SALE BADGE (if on sale)
+            if (item.is_on_sale && item.discount_percent) {
+                const badge = document.createElement("span");
+                badge.className = "sale-badge";
+                badge.textContent = item.discount_percent + "% OFF";
+                badge.style.position = "absolute";
+                badge.style.top = "10px";
+                badge.style.right = "10px";
+                badge.style.backgroundColor = "#4a5568";
+                badge.style.color = "white";
+                badge.style.padding = "5px 10px";
+                badge.style.borderRadius = "4px";
+                badge.style.fontSize = "12px";
+                badge.style.fontWeight = "bold";
+                card.style.position = "relative";
+                card.insertBefore(badge, img);
+            }
+
             // PRODUCT NAME
             const title = document.createElement("h3");
             title.textContent = item.product;
@@ -47,6 +65,16 @@ function displayProducts(data) {
             const store = document.createElement("p");
             store.textContent = item.store;
             card.appendChild(store);
+
+            // ORIGINAL PRICE (struck through if on sale)
+            if (item.is_on_sale && item.original_price) {
+                const old = document.createElement("p");
+                old.textContent = "₹" + item.original_price;
+                old.style.textDecoration = "line-through";
+                old.style.color = "#999";
+                old.style.fontSize = "14px";
+                card.appendChild(old);
+            }
 
             // PRICE
             const price = document.createElement("p");
@@ -58,20 +86,6 @@ function displayProducts(data) {
             }
 
             card.appendChild(price);
-
-            // OLD PRICE + DISCOUNT
-            if (item.old_price && item.old_price > item.price) {
-                const old = document.createElement("p");
-                old.textContent = "₹" + item.old_price;
-                old.style.textDecoration = "line-through";
-                card.appendChild(old);
-
-                const discount = document.createElement("p");
-                discount.textContent =
-                    Math.round(((item.old_price - item.price) / item.old_price) * 100) + "% OFF";
-                discount.style.color = "red";
-                card.appendChild(discount);
-            }
 
             // BUTTON
             const btn = document.createElement("a");

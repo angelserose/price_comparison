@@ -93,7 +93,8 @@ def all_products():
     try:
         query = """
         SELECT products.name, products.image_url, stores.store_name,
-               prices.price, prices.old_price, prices.store_url
+               prices.price, prices.original_price, prices.discount_percent,
+               prices.is_on_sale, prices.store_url
         FROM prices
         JOIN products ON prices.product_id = products.id
         JOIN stores ON prices.store_id = stores.id
@@ -110,8 +111,10 @@ def all_products():
                 "image": row[1],
                 "store": row[2],
                 "price": float(row[3]),
-                "old_price": float(row[4]) if row[4] else 0,
-                "store_url": row[5]
+                "original_price": float(row[4]) if row[4] else None,
+                "discount_percent": row[5],
+                "is_on_sale": row[6],
+                "store_url": row[7]
             })
 
         return jsonify(result)
@@ -295,6 +298,260 @@ def update_price():
     except Exception as e:
         conn.rollback()
         return f"Update error: {str(e)}"
+
+
+# ================= GET SALE PRODUCTS =================
+@app.route("/on_sale")
+def on_sale_products():
+    """Get all products currently on sale"""
+    try:
+        query = """
+        SELECT p.name, s.store_name, 
+               pr.price, pr.original_price, pr.discount_percent
+        FROM prices pr
+        JOIN products p ON pr.product_id = p.id
+        JOIN stores s ON pr.store_id = s.id
+        WHERE pr.is_on_sale = TRUE
+        ORDER BY pr.discount_percent DESC, pr.price ASC
+        """
+        
+        cur.execute(query)
+        data = cur.fetchall()
+        
+        result = []
+        for row in data:
+            savings = float(row[3]) - float(row[2]) if row[3] else 0
+            result.append({
+                "product": row[0],
+                "store": row[1],
+                "sale_price": float(row[2]),
+                "original_price": float(row[3]) if row[3] else None,
+                "discount_percent": row[4],
+                "savings": savings
+            })
+        
+        return jsonify(result)
+    
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)})
+
+
+# ================= GET CHEAPEST VERSION OF PRODUCT =================
+@app.route("/cheapest/<product>")
+def cheapest_deal(product):
+    """Get the cheapest version of a product across all stores"""
+    try:
+        query = """
+        SELECT p.name, s.store_name, pr.price, pr.original_price, 
+               pr.discount_percent, pr.is_on_sale
+        FROM prices pr
+        JOIN products p ON pr.product_id = p.id
+        JOIN stores s ON pr.store_id = s.id
+        WHERE p.name ILIKE %s
+        ORDER BY pr.price ASC
+        """
+        
+        cur.execute(query, (f"%{product}%",))
+        data = cur.fetchall()
+        
+        if not data:
+            return jsonify({"message": "Product not found"}), 404
+        
+        # First one is cheapest
+        cheapest = data[0]
+        
+        result = {
+            "product": cheapest[0],
+            "cheapest_store": cheapest[1],
+            "price": float(cheapest[2]),
+            "original_price": float(cheapest[3]) if cheapest[3] else None,
+            "discount_percent": cheapest[4],
+            "on_sale": cheapest[5],
+            "all_options": []
+        }
+        
+        # Add all options
+        for row in data:
+            result["all_options"].append({
+                "store": row[1],
+                "price": float(row[2]),
+                "original_price": float(row[3]) if row[3] else None,
+                "discount_percent": row[4],
+                "on_sale": row[5]
+            })
+        
+        return jsonify(result)
+    
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)})
+
+
+# ================= SALE STATISTICS =================
+@app.route("/sale_stats")
+def sale_stats():
+    """Get sale statistics and trending discounts"""
+    try:
+        query = """
+        SELECT 
+            COUNT(*) as total_on_sale,
+            ROUND(AVG(discount_percent)::numeric, 1) as avg_discount,
+            MAX(discount_percent) as max_discount,
+            MIN(discount_percent) as min_discount,
+            ROUND(SUM(pr.original_price - pr.price)::numeric, 0) as total_savings
+        FROM prices pr
+        WHERE pr.is_on_sale = TRUE
+        """
+        
+        cur.execute(query)
+        row = cur.fetchone()
+        
+        stats = {
+            "total_products_on_sale": row[0],
+            "average_discount_percent": float(row[1]) if row[1] else 0,
+            "max_discount_percent": row[2],
+            "min_discount_percent": row[3],
+            "total_customer_savings": float(row[4]) if row[4] else 0
+        }
+        
+        return jsonify(stats)
+    
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)})
+
+
+# ================= BEST DEALS ENDPOINT =================
+@app.route("/best_deals")
+def best_deals():
+    """Get top deals sorted by discount percentage and savings"""
+    try:
+        query = """
+        SELECT p.name, s.store_name, pr.price, pr.original_price,
+               pr.discount_percent,
+               (pr.original_price - pr.price) as savings
+        FROM prices pr
+        JOIN products p ON pr.product_id = p.id
+        JOIN stores s ON pr.store_id = s.id
+        WHERE pr.is_on_sale = TRUE
+        ORDER BY pr.discount_percent DESC, savings DESC
+        LIMIT 5
+        """
+        
+        cur.execute(query)
+        data = cur.fetchall()
+        
+        result = []
+        for row in data:
+            result.append({
+                "product": row[0],
+                "store": row[1],
+                "sale_price": float(row[2]),
+                "original_price": float(row[3]) if row[3] else None,
+                "discount_percent": row[4],
+                "savings": float(row[5]) if row[5] else 0,
+                "badge": f"{row[4]}% OFF 🔥"
+            })
+        
+        return jsonify({
+            "best_deals": result,
+            "message": f"Found {len(result)} amazing deals!"
+        })
+    
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)})
+
+
+# ================= SALES DASHBOARD =================
+@app.route("/sales_dashboard")
+def sales_dashboard():
+    """Render beautiful sales dashboard with all data"""
+    try:
+        # Get best deals (same as /best_deals API)
+        best_deals_query = """
+        SELECT p.name, s.store_name, pr.price, pr.original_price,
+               pr.discount_percent,
+               (pr.original_price - pr.price) as savings
+        FROM prices pr
+        JOIN products p ON pr.product_id = p.id
+        JOIN stores s ON pr.store_id = s.id
+        WHERE pr.is_on_sale = TRUE
+        ORDER BY pr.discount_percent DESC, savings DESC
+        LIMIT 5
+        """
+        
+        cur.execute(best_deals_query)
+        deals_data = cur.fetchall()
+        best_deals = []
+        for row in deals_data:
+            best_deals.append({
+                "product": row[0],
+                "store": row[1],
+                "sale_price": float(row[2]),
+                "original_price": float(row[3]) if row[3] else None,
+                "discount_percent": row[4],
+                "savings": float(row[5]) if row[5] else 0
+            })
+        
+        # Get all on-sale products
+        all_sales_query = """
+        SELECT p.name, s.store_name, pr.price, pr.original_price,
+               pr.discount_percent,
+               (pr.original_price - pr.price) as savings
+        FROM prices pr
+        JOIN products p ON pr.product_id = p.id
+        JOIN stores s ON pr.store_id = s.id
+        WHERE pr.is_on_sale = TRUE
+        ORDER BY pr.discount_percent DESC, savings DESC
+        """
+        
+        cur.execute(all_sales_query)
+        all_sales_data = cur.fetchall()
+        all_on_sale = []
+        for row in all_sales_data:
+            all_on_sale.append({
+                "name": row[0],
+                "store_name": row[1],
+                "price": float(row[2]),
+                "original_price": float(row[3]) if row[3] else None,
+                "discount_percent": row[4],
+                "savings": float(row[5]) if row[5] else 0
+            })
+        
+        # Get statistics
+        stats_query = """
+        SELECT 
+            COUNT(DISTINCT pr.id) as total_on_sale,
+            ROUND(AVG(pr.discount_percent)::numeric, 2) as avg_discount,
+            MAX(pr.discount_percent) as max_discount,
+            MIN(pr.discount_percent) as min_discount,
+            SUM(pr.original_price - pr.price) as total_savings
+        FROM prices pr
+        WHERE pr.is_on_sale = TRUE
+        """
+        
+        cur.execute(stats_query)
+        stats_row = cur.fetchone()
+        stats = {
+            "total_products_on_sale": stats_row[0] or 0,
+            "average_discount_percent": float(stats_row[1]) if stats_row[1] else 0,
+            "max_discount_percent": int(stats_row[2]) if stats_row[2] else 0,
+            "min_discount_percent": int(stats_row[3]) if stats_row[3] else 0,
+            "total_customer_savings": float(stats_row[4]) if stats_row[4] else 0
+        }
+        
+        return render_template(
+            "sales_dashboard.html",
+            best_deals=best_deals,
+            all_on_sale=all_on_sale,
+            stats=stats
+        )
+    
+    except Exception as e:
+        conn.rollback()
+        return jsonify({"error": str(e)})
 
 
 # ================= RUN =================
