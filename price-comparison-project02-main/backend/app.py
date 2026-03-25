@@ -112,15 +112,20 @@ def user_login():
                 return "Please enter both username and password"
 
             cur.execute(
-                "SELECT * FROM users WHERE username=%s",
+                "SELECT id, username, password FROM users WHERE username=%s",
                 (username,)
             )
 
             user = cur.fetchone()
 
-            if user and check_password_hash(user[2], password):
-                session["username"] = username
-                return redirect("/")
+            if user:
+                # user[2] is the password
+                stored_pass = user[2].strip() if user[2] else ""
+                
+                # Try both plain and hashed password checks
+                if stored_pass == password or (stored_pass.startswith("scrypt:") and check_password_hash(stored_pass, password)):
+                    session["username"] = username
+                    return redirect("/")
 
             return "Invalid login credentials"
 
@@ -197,15 +202,20 @@ def admin_login():
             return "Please enter both username and password"
 
         cur.execute(
-            "SELECT * FROM admin_users WHERE username=%s",
+            "SELECT id, username, password FROM admin_users WHERE username=%s",
             (username,)
         )
 
         admin = cur.fetchone()
 
-        if admin and check_password_hash(admin[2], password):
-            session["admin"] = username
-            return redirect("/admin/dashboard")
+        if admin:
+            # admin[2] is the password
+            stored_pass = admin[2].strip() if admin[2] else ""
+            
+            # Try both plain and hashed password checks
+            if stored_pass == password or (stored_pass.startswith("scrypt:") and check_password_hash(stored_pass, password)):
+                session["admin"] = username
+                return redirect("/admin/dashboard")
 
         return "Invalid admin credentials"
     
