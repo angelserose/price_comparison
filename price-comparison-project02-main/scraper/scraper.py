@@ -4,11 +4,17 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-# Connect database
-conn = psycopg2.connect(
-    os.environ.get('DATABASE_URL'),
-    sslmode='require'
-)
+# Connect database with SSL fallback
+db_url = os.environ.get('DATABASE_URL')
+try:
+    conn = psycopg2.connect(db_url, sslmode='require', connect_timeout=5)
+except Exception as e:
+    print(f"SSL connection failed, trying without SSL...")
+    try:
+        conn = psycopg2.connect(db_url, connect_timeout=5)
+    except Exception as e2:
+        print(f"Database connection failed: {e2}")
+        raise
 
 cur = conn.cursor()
 
