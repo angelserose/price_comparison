@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - O'Hara</title>
+</head>
+<body>
+
+<h2>Admin Dashboard</h2>
+
+<a href="/logout">Logout</a>
+
+<h3>Update Prices</h3>
+
+<table border="1" cellpadding="10">
+<tr>
+    <th>Product</th>
+    <th>Store</th>
+    <th>Price</th>
+    <th>Update</th>
+</tr>
+
+{% for row in data %}
+<tr>
+    <form method="POST" action="/update_price">
+        
+        <td>{{ row[1] }}</td> <!-- product name -->
+        
+        <td>{{ row[3] }}</td> <!-- store name -->
+        
+        <td>
+            <input type="number" name="price" value="{{ row[4] }}" required>
+        </td>
+
+        <!-- hidden IDs -->
+        <input type="hidden" name="product_id" value="{{ row[0] }}">
+        <input type="hidden" name="store_id" value="{{ row[2] }}">
+
+        <td>
+            <button type="submit">Update</button>
+        </td>
+
+    </form>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>

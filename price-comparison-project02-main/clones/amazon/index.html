@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Clone</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+
+<div class="navbar">
+
+<div class="nav-logo border">
+<div class="logo"></div>
+</div>
+
+<div class="nav-address border">
+<p class="add-first">Deliver To</p>
+<div class="add-icon">
+<i class="fa-solid fa-location-dot"></i>
+<p class="add-second">India</p>
+</div>
+</div>
+
+<div class="nav-search">
+<select class="search-select"><option>All</option></select>
+<input placeholder="Search Amazon" class="search-input">
+<div class="search-icon">
+<i class="fa-solid fa-magnifying-glass"></i>
+</div>
+</div>
+
+<div class="nav-signin border">
+<p><span>Hello, Sign In</span></p>
+<p class="nav-second">Account & Lists</p>
+</div>
+
+<div class="nav-return border">
+<p><span>Returns</span></p>
+<p class="nav-second">& Orders</p>
+</div>
+
+<div class="nav-cart border">
+<i class="fa-solid fa-cart-shopping"></i>
+Cart
+</div>
+
+</div>
+
+<div class="panel">
+
+<div class="panel-all">
+<i class="fa-solid fa-bars"></i>
+All
+</div>
+
+<div class="panel-ops">
+<p>Today's Deal</p>
+<p>Customer Service</p>
+<p>Registry</p>
+<p>Gift Cards</p>
+<p>Sell</p>
+</div>
+
+<div class="panel-deals">
+Shop deals in Electronics
+</div>
+
+</div>
+
+</header>
+
+<div class="hero-section">
+
+<div class="hero-msg">
+
+You are on Amazon.com. You can also shop on Amazon for millions of products with fast local delivery.
+
+<a href="https://www.amazon.in" target="_blank">Click here to go to amazon.in</a>
+
+</div>
+
+</div>
+
+<div class="shop-section">
+
+<div class="box">
+<div class="box-content">
+<h2>Clothes</h2>
+<div class="box-img" style="background-image:url('box1_image.jpg')"></div>
+<p>See More</p>
+</div>
+</div>
+
+<div class="box">
+<div class="box-content">
+<h2>Health & Personal Care</h2>
+<div class="box-img" style="background-image:url('box2_image.jpg')"></div>
+<p>See More</p>
+</div>
+</div>
+
+<div class="box">
+<div class="box-content">
+<h2>Furniture</h2>
+<div class="box-img" style="background-image:url('box3_image.jpg')"></div>
+<p>See More</p>
+</div>
+</div>
+
+<div class="box">
+<div class="box-content">
+<h2>Electronics</h2>
+<div class="box-img" style="background-image:url('box4_image.jpg')"></div>
+<p>See More</p>
+</div>
+</div>
+
+<div class="box">
+<div class="box-content">
+<h2>Beauty</h2>
+<div class="box-img" style="background-image:url('box5_image.jpg')"></div>
+<p>See More</p>
+</div>
+</div>
+
+<div class="box">
+<div class="box-content">
+<h2>Pet Care</h2>
+<div class="box-img" style="background-image:url('box6_image.jpg')"></div>
+<p>See More</p>
+</div>
+</div>
+
+<div class="box">
+<div class="box-content">
+<h2>Toys</h2>
+<div class="box-img" style="background-image:url('box7_image.jpg')"></div>
+<p>See More</p>
+</div>
+</div>
+
+<div class="box">
+<div class="box-content">
+<h2>Women Wear</h2>
+<div class="box-img" style="background-image:url('box8_image.jpg')"></div>
+<p>See More</p>
+</div>
+</div>
+
+</div>
+
+
+<!-- PRODUCT SECTION FOR SCRAPER -->
+
+<section class="real-products">
+
+<h2 class="product-title">Popular Products</h2>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/61XO4bORHUL._SL1500_.jpg">
+<h2 class="product-name">iPhone 14</h2>
+<span class="price">69999</span>
+</div>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/61RZDb2mQxL._SL1500_.jpg">
+<h2 class="product-name">Samsung Galaxy S23</h2>
+<span class="price">74999</span>
+</div>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/71f5Eu5lJSL._SL1500_.jpg">
+<h2 class="product-name">MacBook Air M2</h2>
+<span class="price">99999</span>
+</div>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/61vGQNUEsGL._SL1500_.jpg">
+<h2 class="product-name">Sony WH-1000XM5 Headphones</h2>
+<span class="price">34999</span>
+</div>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/71TPda7cwUL._SL1500_.jpg">
+<h2 class="product-name">Dell XPS 13</h2>
+<span class="price">109999</span>
+</div>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/71LfnkRgZ4L._SL1500_.jpg">
+<h2 class="product-name">Apple Watch Series 9</h2>
+<span class="price">41999</span>
+</div>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/61XZQXFQeVL._SL1500_.jpg">
+<h2 class="product-name">iPad Air</h2>
+<span class="price">59999</span>
+</div>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/71WkDp--uqL._SL1500_.jpg">
+<h2 class="product-name">HP Pavilion Laptop</h2>
+<span class="price">65999</span>
+</div>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/61ni3t1ryQL._SL1500_.jpg">
+<h2 class="product-name">Logitech MX Master Mouse</h2>
+<span class="price">8999</span>
+</div>
+
+<div class="product">
+<img src="https://m.media-amazon.com/images/I/81ni8gZ0D1L._SL1500_.jpg">
+<h2 class="product-name">Samsung 55 Inch Smart TV</h2>
+<span class="price">54999</span>
+</div>
+
+</section>
+
+
+<footer>
+
+<div class="foot-panel1">Back To Top</div>
+
+<div class="foot-panel2">
+<ul>
+<p>Get to know us</p>
+<a>Careers</a>
+<a>Blog</a>
+<a>About Amazon</a>
+<a>Investor relations</a>
+</ul>
+</div>
+
+<div class="foot-panel3">
+<div class="logo"></div>
+</div>
+
+<div class="foot-panel4">
+<div class="pages">
+<a>Conditions of Use</a>
+<a>Privacy Notice</a>
+</div>
+
+<div class="copyright">
+© 1996-2025 Amazon Clone
+</div>
+
+</div>
+
+</footer>
+
+</body>
+</html>

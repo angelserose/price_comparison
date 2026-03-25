@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>O'Hara - Price Comparison</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body><div class="navbar">
+    <h2 class="logo">O'Hara</h2>
+
+    <div class="nav-buttons">
+        <div class="nav-buttons">
+
+    {% if username %}
+        <span>Welcome, {{ username }}</span>
+
+        <a href="/logout">
+            <button>Logout</button>
+        </a>
+
+    {% else %}
+        <a href="/login">
+            <button>User Login</button>
+        </a>
+
+        <a href="/admin">
+            <button>Admin Login</button>
+        </a>
+    {% endif %}
+
+</div>
+    </div>
+</div>
+    <div style="position:absolute; top:20px; right:20px;">
+
+<a href="/login">
+<button>User Login</button>
+</a>
+
+<a href="/admin/login">
+<button>Admin Login</button>
+</a>
+
+</div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="brand">
+            <h1>O'Hara</h1>
+            <p class="tagline">Smart Price Comparison Across Top Stores</p>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero / Search Section -->
+    <section id="home" class="hero">
+        <h2>Find the Best Deals Across Multiple Stores</h2>
+        <div class="search-box">
+            <input id="productInput" placeholder="Search for a product">
+            <button onclick="searchProduct()">Search</button>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products">
+        <h2>Featured Products</h2>
+        <div class="result" id="resultContainer">
+            <!-- Product cards will appear here -->
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <h2>About O'Hara</h2>
+        <p>O'Hara is a smart price comparison platform that helps users find the best deals across multiple online stores like Amazon, Flipkart, and JioMart. Compare prices, see discounts, and make smart buying decisions all in one place.</p>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <h2>Contact Us</h2>
+        <p>Reach out to our team:</p>
+        <ul>
+            <li>Arsha M - arsham@gmail.com</li>
+            <li>Ardra P S - ardra99@gmail.com</li>
+            <li>Angel Rose K T - angelrose@gmail.com</li>
+            <li>Diya S - diya123@gmail.com</li>
+        </ul>
+    </section>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

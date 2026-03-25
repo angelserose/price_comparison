@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Admin Dashboard</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f5f1e8;
+padding:40px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ddd;
+padding:10px;
+text-align:center;
+}
+
+button{
+background:#2a9d8f;
+color:white;
+border:none;
+padding:5px 10px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>O'Hara Admin Dashboard</h1>
+
+<table>
+
+<tr>
+<th>Product</th>
+<th>Store</th>
+<th>Price</th>
+<th>Update Price</th>
+</tr>
+
+{% for item in data %}
+
+<tr>
+
+<td>{{item.product}}</td>
+<td>{{item.store}}</td>
+<td>{{item.price}}</td>
+
+<td>
+
+<form method="POST" action="/update_price">
+
+<input type="hidden" name="product_id" value="{{item.product_id}}">
+<input type="hidden" name="store_id" value="{{item.store_id}}">
+
+<input type="number" name="price">
+
+<button type="submit">Update</button>
+
+</form>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

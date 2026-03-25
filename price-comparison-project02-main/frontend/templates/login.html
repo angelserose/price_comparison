@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Login - O'Hara</title>
+<style>
+
+body{
+font-family:Arial;
+background:#f5f1e8;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.login-box{
+background:white;
+padding:40px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+input{
+display:block;
+margin:10px 0;
+padding:10px;
+width:250px;
+}
+
+button{
+background:#2a9d8f;
+color:white;
+border:none;
+padding:10px;
+width:100%;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+<h2>O'Hara Admin Login</h2>
+
+<form method="POST" action="/admin/login">
+
+<input type="text" name="username" placeholder="Username" required>
+
+<input type="password" name="password" placeholder="Password" required>
+
+<button type="submit">Login</button>
+
+</form>
+
+</div>
+
+</body>
+</html>
