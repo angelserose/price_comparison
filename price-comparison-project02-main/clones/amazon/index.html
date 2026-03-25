@@ -259,5 +259,35 @@ You are on Amazon.com. You can also shop on Amazon for millions of products with
 
 </footer>
 
+<script>
+  // Search for product from URL parameter
+  document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const productName = params.get('product');
+    
+    if (productName) {
+      const decodeProduct = decodeURIComponent(productName).replace(/\+/g, ' ');
+      const products = document.querySelectorAll('.product');
+      let found = false;
+      
+      products.forEach(product => {
+        const name = product.querySelector('.product-name');
+        if (name && name.textContent.toLowerCase().includes(decodeProduct.toLowerCase())) {
+          // Highlight matching product
+          product.style.border = '3px solid #FF9F00';
+          product.style.boxShadow = '0 0 10px #FF9F00';
+          product.style.transform = 'scale(1.05)';
+          product.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          found = true;
+        }
+      });
+      
+      if (!found) {
+        alert(`Product "${decodeProduct}" not found on this page`);
+      }
+    }
+  });
+</script>
+
 </body>
 </html>

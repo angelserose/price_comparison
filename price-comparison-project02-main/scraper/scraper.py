@@ -1,20 +1,21 @@
 import psycopg2
 from bs4 import BeautifulSoup
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # Connect database
 conn = psycopg2.connect(
-    host="localhost",
-    database="price_comparison",
-    user="postgres",
-    password="root123"
+    os.environ.get('DATABASE_URL'),
+    sslmode='require'
 )
 
 cur = conn.cursor()
 
 stores = [
-    ("../clones/amazon/index.html", 1, "https://www.amazon.in"),
-    ("../clones/flipkart/index.html", 2, "https://www.flipkart.com"),
-    ("../clones/jiomart/index.html", 3, "https://www.jiomart.com")
+    ("../clones/amazon/index.html", 1, "/clones/amazon/index.html"),
+    ("../clones/flipkart/index.html", 2, "/clones/flipkart/index.html"),
+    ("../clones/jiomart/index.html", 3, "/clones/jiomart/index.html")
 ]
 
 for file_path, store_id, store_base_url in stores:
@@ -47,9 +48,8 @@ for file_path, store_id, store_base_url in stores:
         image_tag = item.find("img")
         image = image_tag["src"] if image_tag else ""
 
-        # 🔥 CREATE STORE URL
-        product_slug = name.lower().replace(" ", "-")
-        store_url = f"{store_base_url}/s?k={product_slug}"
+        # 🔥 CREATE STORE URL (add product name as query parameter)
+        store_url = f"{store_base_url}?product={name.replace(' ', '+')}"
 
         # Check if product exists
         cur.execute(

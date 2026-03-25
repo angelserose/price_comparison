@@ -1,7 +1,12 @@
-from flask import Flask, jsonify, render_template, request, redirect, session
+from flask import Flask, jsonify, render_template, request, redirect, session, send_from_directory
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg2
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Initialize Flask
 app = Flask(
@@ -13,15 +18,32 @@ app.secret_key = "mysecretkey"
 
 CORS(app)
 
-# Database connection
-conn = psycopg2.connect(
-    database="price_comparison",
-    user="postgres",
-    password="root123",
-    host="localhost",
-    port="5432"
-)
+# Database connection with conditional SSL
+db_url = os.environ.get('DATABASE_URL')
+try:
+    # Try with SSL (for Supabase)
+    conn = psycopg2.connect(
+        db_url,
+        sslmode='require',
+        connect_timeout=5
+    )
+except Exception as e:
+    # Fall back to no SSL (for localhost)
+    print(f"SSL connection failed, trying without SSL: {e}")
+    try:
+        conn = psycopg2.connect(db_url)
+    except Exception as e2:
+        print(f"Connection failed: {e2}")
+        raise
+
 cur = conn.cursor()
+
+
+# ================= SERVE CLONES =================
+@app.route('/clones/<path:filename>')
+def serve_clones(filename):
+    clones_path = os.path.join(os.path.dirname(__file__), '../clones')
+    return send_from_directory(clones_path, filename)
 
 
 # ================= HOME =================
