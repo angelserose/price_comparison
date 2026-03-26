@@ -14,7 +14,7 @@ app = Flask(
     template_folder="templates",
     static_folder="static"
 )
-app.secret_key = "mysecretkey"
+app.secret_key = os.getenv('SECRET_KEY', 'dev-key-change-in-production')
 
 CORS(app)
 
