@@ -1,21 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - SNAP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <div class="login-container">
+        <div class="login-box admin-login-box">
+            <div class="login-header">
+                <h1>SNAP</h1>
+                <p>Smart Price Comparison</p>
+            </div>
 
-<h2>Admin Login</h2>
+            <form method="POST" action="/admin/login" class="login-form">
+                <h2>Admin Login</h2>
+                
+                <input 
+                    type="text" 
+                    name="username" 
+                    placeholder="Admin Username" 
+                    required
+                    class="login-input"
+                >
+                
+                <input 
+                    type="password" 
+                    name="password" 
+                    placeholder="Password" 
+                    required
+                    class="login-input"
+                >
+                
+                <button type="submit" class="admin-login-btn">Admin Login</button>
+            </form>
 
-<form method="POST" action="/admin/login">
-    <input type="text" name="username" placeholder="Admin Username" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br><br>
-    <button type="submit">Login</button>
-</form>
-
-<br>
-
-<a href="/">Back to Home</a>
-
+            <div class="login-footer">
+                <p><a href="/" class="back-link">← Back to Home</a></p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -113,3 +113,24 @@ async function searchProduct() {
         alert("Failed to fetch prices");
     }
 }
+
+// Go Home functionality - Reset to homepage
+async function goHome(event) {
+    event.preventDefault();
+    
+    // Clear search input
+    document.getElementById("productInput").value = "";
+    
+    // Reload all products
+    try {
+        const response = await fetch('/all_products');
+        const data = await response.json();
+        displayProducts(data);
+    } catch (err) {
+        console.error(err);
+        alert("Failed to load homepage products");
+    }
+    
+    // Scroll to home section
+    document.getElementById("home").scrollIntoView({ behavior: "smooth" });
+}
