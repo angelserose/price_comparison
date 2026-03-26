@@ -9,14 +9,24 @@ load_dotenv()
 # Database connection
 db_url = os.environ.get('DATABASE_URL')
 
+if not db_url:
+    print("❌ Error: DATABASE_URL not found in .env file!")
+    print("Please ensure .env file is in the same directory as this script.")
+    exit(1)
+
+print(f"Connecting to database: {db_url.split('@')[1] if '@' in db_url else 'Unknown'}...")
+
 try:
     conn = psycopg2.connect(db_url, sslmode='require', connect_timeout=5)
+    print("✓ Connected with SSL")
 except Exception as e:
-    print(f"SSL connection failed, trying without SSL: {e}")
+    print(f"SSL connection failed, trying without SSL...")
     try:
-        conn = psycopg2.connect(db_url)
+        conn = psycopg2.connect(db_url, connect_timeout=5)
+        print("✓ Connected without SSL")
     except Exception as e2:
-        print(f"Connection failed: {e2}")
+        print(f"❌ Connection failed: {e2}")
+        print(f"DATABASE_URL: {db_url}")
         raise
 
 cur = conn.cursor()
