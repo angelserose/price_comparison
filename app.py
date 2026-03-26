@@ -18,25 +18,26 @@ app.secret_key = os.getenv('SECRET_KEY', 'dev-key-change-in-production')
 
 CORS(app)
 
-# Database connection with conditional SSL
-db_url = os.environ.get('DATABASE_URL')
-try:
-    # Try with SSL (for Supabase)
-    conn = psycopg2.connect(
-        db_url,
-        sslmode='require',
-        connect_timeout=5
-    )
-except Exception as e:
-    # Fall back to no SSL (for localhost)
-    print(f"SSL connection failed, trying without SSL: {e}")
+# ================= DATABASE CONNECTION FUNCTION =================
+def get_db_connection():
+    """Create database connection on-demand"""
+    db_url = os.environ.get('DATABASE_URL')
+    if not db_url:
+        print("ERROR: DATABASE_URL not set!")
+        return None
+    
     try:
-        conn = psycopg2.connect(db_url)
-    except Exception as e2:
-        print(f"Connection failed: {e2}")
-        raise
-
-cur = conn.cursor()
+        # Try with SSL (for Supabase)
+        conn = psycopg2.connect(db_url, sslmode='require', connect_timeout=5)
+        return conn
+    except Exception as e:
+        # Fall back to no SSL (for localhost)
+        try:
+            conn = psycopg2.connect(db_url)
+            return conn
+        except Exception as e2:
+            print(f"Database connection error: {e2}")
+            return None
 
 
 # ================= SERVE CLONES =================
