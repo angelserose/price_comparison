@@ -56,7 +56,15 @@ def home():
 # ================= GET PRODUCT (SEARCH) =================
 @app.route("/price/<product>")
 def get_price(product):
+    conn = None
+    cur = None
     try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({"error": "Database connection failed"}), 500
+        
+        cur = conn.cursor()
+        
         query = """
         SELECT products.name, products.image_url, stores.store_name,
                prices.price, prices.old_price, prices.store_url
@@ -84,14 +92,28 @@ def get_price(product):
         return jsonify(result)
 
     except Exception as e:
-        conn.rollback()
-        return jsonify({"error": str(e)})
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 
 # ================= ALL PRODUCTS (HOMEPAGE) =================
 @app.route("/all_products")
 def all_products():
+    conn = None
+    cur = None
     try:
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({"error": "Database connection failed"}), 500
+        
+        cur = conn.cursor()
+        
         query = """
         SELECT products.name, products.image_url, stores.store_name,
                prices.price, prices.old_price, prices.store_url
@@ -125,8 +147,14 @@ def all_products():
         return jsonify(result)
 
     except Exception as e:
-        conn.rollback()
-        return jsonify({"error": str(e)})
+        if conn:
+            conn.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 
 # ================= USER LOGIN =================
@@ -134,7 +162,15 @@ def all_products():
 def user_login():
 
     if request.method == "POST":
+        conn = None
+        cur = None
         try:
+            conn = get_db_connection()
+            if not conn:
+                return "Database connection failed", 500
+            
+            cur = conn.cursor()
+            
             username = request.form.get("username", "").strip()
             password = request.form.get("password", "").strip()
             
@@ -160,8 +196,14 @@ def user_login():
             return "Invalid login credentials"
 
         except Exception as e:
-            conn.rollback()
-            return f"Login error: {str(e)}"
+            if conn:
+                conn.rollback()
+            return f"Login error: {str(e)}", 500
+        finally:
+            if cur:
+                cur.close()
+            if conn:
+                conn.close()
 
     return render_template("user_login.html")
 
@@ -171,7 +213,15 @@ def user_login():
 def signup():
 
     if request.method == "POST":
+        conn = None
+        cur = None
         try:
+            conn = get_db_connection()
+            if not conn:
+                return "Database connection failed", 500
+            
+            cur = conn.cursor()
+            
             username = request.form.get("username", "").strip()
             password = request.form.get("password", "").strip()
             
@@ -201,8 +251,14 @@ def signup():
             return redirect("/login")
 
         except Exception as e:
-            conn.rollback()
-            return f"Signup error: {str(e)}"
+            if conn:
+                conn.rollback()
+            return f"Signup error: {str(e)}", 500
+        finally:
+            if cur:
+                cur.close()
+            if conn:
+                conn.close()
 
     return render_template("signup.html")
 
@@ -223,8 +279,15 @@ def admin_page():
 
 @app.route("/admin/login", methods=["POST"])
 def admin_login():
-
+    conn = None
+    cur = None
     try:
+        conn = get_db_connection()
+        if not conn:
+            return "Database connection failed", 500
+        
+        cur = conn.cursor()
+        
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
         
@@ -250,8 +313,14 @@ def admin_login():
         return "Invalid admin credentials"
     
     except Exception as e:
-        conn.rollback()
-        return f"Admin login error: {str(e)}"
+        if conn:
+            conn.rollback()
+        return f"Admin login error: {str(e)}", 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 
 
 # ================= ADMIN DASHBOARD =================
